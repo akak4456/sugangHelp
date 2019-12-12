@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" /> 
+<style>
+div.container {
+  width: 100%;
+  border: 1px solid gray;
+}
+
+header, footer {
+    padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+nav {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+   
+nav ul a {
+    text-decoration: none;
+}
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=button] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=button]:hover {
+    background-color: #45a049;
+}
+</style>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="./sha512.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./posttourl.js"  type="text/javascript" charset="utf-8"></script>
+<script language="javascript" charset="utf-8">
+  function login(){
+    var key1 = document.getElementById("input1").value;
+    var key2 = document.getElementById("input2").value;
+    if(key1.length < 5 || key2.length < 5 || key1.length > 20 || key2.length > 20){
+        alert("아이디와 비밀번호는 5~20자이어야 합니다.");
+    }else{
+      $.post("./login.php", { 'ID':key1 ,'PW':hex_sha512(key2) }, function (data) {
+            if(data == "!FALSE"){
+                alert("아이디와 비밀번호가 틀립니다.");
+            }else{
+                userID = key1;
+                if(data == "INHA"){ 
+                    post_to_url('./inha_main.html',{'universityID':key1});
+                }
+            }
+      });
+    }
+  }
+  function join(){
+    var key1 = document.getElementById("input1").value;
+    var key2 = document.getElementById("input2").value;
+    var key3 = document.getElementById("input3").value;
+    if(key1.length < 5 || key2.length < 5 || key1.length > 20 || key2.length > 20){
+      alert("아이디와 비밀번호는 5~20자이어야 합니다.");
+    }else if(key2 != key3){
+      alert("비밀번호와 비밀번호확인이 같아야 합니다.");
+    }else{
+      $.post("./join.php", { 'ID':key1 ,'PW':hex_sha512(key2),'UNIVERSITY':'INHA' }, function (data) {
+        if(data == "!FALSE1"){
+          alert("아이디는 영어대소문자와 숫자만 가능합니다.");
+        }else if(data == "!FALSE2"){
+          alert("이 아이디는 이미 있습니다. 다른 아이디로 해주세요.");
+        }else{
+          alert("회원가입이 완료되었습니다.");
+        }
+      });
+    }
+  }
+  function withdraw(){
+    var key1 = document.getElementById("input1").value;
+    var key2 = document.getElementById("input2").value;
+    if(key1.length < 5 || key2.length < 5 || key1.length > 20 || key2.length > 20){
+      alert("아이디와 비밀번호는 5~20자이어야 합니다.");
+    }else{
+      $.post("./withdraw.php", { 'ID':key1 ,'PW':hex_sha512(key2) }, function (data) {
+        if(data == "!FALSE"){
+          alert("아이디와 비밀번호가 틀립니다.");
+        }else{
+          alert("회원탈퇴가 완료되었습니다.");
+        }
+      });
+    }
+  }
+</script>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+   <h1>인하대학교 수강신청 도우미</h1>
+</header>
+  
+<nav>
+  <ul>
+  </ul>
+</nav>
+
+<article>
+  <label for="id">아이디</label>
+  <input type="text" id="input1">
+  <label for="pw">비밀번호</label>
+  <input type="password" id="input2">
+  <label for="pwcheck">비밀번호확인</label>
+  <input type="password" id="input3">  
+  <input type="button" value="로그인" onclick="login()">
+  <input type="button" value="회원가입" onclick="join()">
+  <input type="button" value="회원탈퇴" onclick="withdraw()">
+</article>
+
+<footer>관리자 메일 주소:akak4456@naver.com</footer>
+
+</div>
+
+</body>
+</html>

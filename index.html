@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"> 
+<title>수강신청도우미</title>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="./sugangHelp/main/js/sha512.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./sugangHelp/main/js/join.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./sugangHelp/main/js/withdraw.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./sugangHelp/main/js/drawMain.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./sugangHelp/main/js/login.js"  type="text/javascript" charset="utf-8"></script>
+<script language="javascript" charset="utf-8">
+$.ajaxSetup({ async:false });
+function post_to_url(path, params, method) {
+	method = method || "post"; // Set method to post by default, if not specified.
+ 
+	// The rest of this code assumes you are not using a library.
+	// It can be made less wordy if you use one.
+	var form = document.createElement("form");
+	form.setAttribute("method", method);
+	form.setAttribute("action", path);
+ 
+	for(var key in params) {
+		var hiddenField = document.createElement("input");
+        	hiddenField.setAttribute("type", "hidden");
+        	hiddenField.setAttribute("name", key);
+        	hiddenField.setAttribute("value", params[key]);
+ 
+        	form.appendChild(hiddenField);
+    	}
+ 
+	document.body.appendChild(form);
+	form.submit();
+}
+window.onload = function init(){
+	window.location.href = 'http://akak4456.dothome.co.kr/sugangHelp/inha_index.html';
+}
+</script>
+<style>
+div.container {
+    width: 100%;
+    border: 1px solid gray;
+}
+
+header, footer {
+    padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+nav {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+   
+nav ul a {
+    text-decoration: none;
+}
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+</style>
+</head>
+<body>
+</body>
+</html>

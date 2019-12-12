@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" /> 
+<style>
+div.container {
+  width: 100%;
+  border: 1px solid gray;
+}
+
+header, footer {
+    padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+nav {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+   
+nav ul a {
+    text-decoration: none;
+}
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=button] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=button]:hover {
+    background-color: #45a049;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="./sha512.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./posttourl.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./Object.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./loadData.js"  type="text/javascript" charset="utf-8"></script>
+<script language="javascript" charset="utf-8">
+    var universityID = '<?php echo $_POST['universityID']; ?>';
+    var OBJCOUNT = 10;
+    var OBJDAY = 6;
+    var OBJPERIOD = 30;
+var objArray;
+var count;
+var maxCount;
+var scheduleList;
+var scheduleDataString;
+var scheduleNum;
+var beforeScheduleNum;
+var drawNum_showScheduleJs = 0;
+var scheduleArray;
+function doneSchedule(){
+  if(maxCount == 0){
+    return false;
+  }
+  var beforeIndexOfScheduleList = new Array();
+  for(var i=0;i<OBJPERIOD;i++){
+    for(var j=0;j<OBJDAY;j++){
+      var indexOfScheduleList1 = scheduleNum[j][i][0]-1;
+      var indexOfScheduleList2 = scheduleNum[j][i][1];
+      var isCan = false;
+      if(beforeIndexOfScheduleList.length == 0){
+        isCan = true;
+      }else{
+        for(var k=0;k<beforeIndexOfScheduleList.length;k++){
+          if(beforeIndexOfScheduleList[k] == indexOfScheduleList1){
+            break;
+          }else if(k==beforeIndexOfScheduleList.length-1){
+            isCan = true;
+          }
+        }
+      }
+      if(indexOfScheduleList1+1>0&&isCan==true){
+        beforeIndexOfScheduleList[beforeIndexOfScheduleList.length] = indexOfScheduleList1;
+        var num1 = scheduleList[indexOfScheduleList1][indexOfScheduleList2];
+        scheduleDataString += objArray[num1].objNum+"-"+objArray[num1].objClass+"#"+objArray[num1].objClassGroup+"#"+objArray[num1].objName+"#"+objArray[num1].objGrade+"#"+objArray[num1].objScore+"#"+objArray[num1].objKind+"#"+objArray[num1].objPeriodPlace+"#"+objArray[num1].objProf+"#"+objArray[num1].objWayToCheckScore+"#"+objArray[num1].objForWhom+"#"+objArray[num1].objMajor+"$";
+      }
+    }
+  }
+  scheduleDataString += "@";
+  localStorage.setItem("scheduleData",scheduleDataString);
+  if(count%100 == 0){
+    if(confirm("100개정도 만들었습니다. 더 만드시려면 확인, 그만 만드시려면 취소버튼을 눌러주세요.")==true){
+      count++;
+      return true;
+    }else{
+      return false;
+    }
+  }
+  count++;
+  return true;
+}
+function checkSchedule(p_objKind,p_objNum){
+  var indexOfObjArray = scheduleList[p_objKind][p_objNum];
+  for(var t=0;t<objArray[indexOfObjArray].objPeriodArray.length;t++){
+    if(t%3 == 0){
+      if(objArray[indexOfObjArray].objPeriodArray[t] != 0){
+        for(var i=objArray[indexOfObjArray].objPeriodArray[t+1];i<=objArray[indexOfObjArray].objPeriodArray[t+2];i++){
+          if(scheduleNum[objArray[indexOfObjArray].objPeriodArray[t]-1][i-1][0] != 0){
+            return false;
+          }
+        }
+      }
+    }
+  }
+  return true;
+}
+function returnSchedule(p_objKind){
+  for(var i=0;i<OBJDAY;i++){
+    for(var j=0;j<OBJPERIOD;j++){
+      scheduleNum[i][j][0] = beforeScheduleNum[p_objKind][i][j];
+    }
+  }
+}
+function forLoop(p_maxCount,p_n){
+  if(p_n==OBJCOUNT||maxCount==0){
+    return;
+  }
+  if(scheduleList[p_n].length > 0&&objArray[scheduleList[p_n][0]].objNum!=""){
+    for(var i=0;i<scheduleList[p_n].length;i++){
+      returnSchedule(p_n-1);
+      if(checkSchedule(p_n,i)==true){
+        insertSchedule(p_n,i);
+        if(p_maxCount == p_n+1){
+          if(doneSchedule()==false){
+            maxCount = 0;
+          }
+        }
+        forLoop(p_maxCount,p_n+1);
+      }else{
+        continue;
+      }
+    }
+  }else{
+    return;
+  }
+}
+function insertSchedule(p_objKind,p_objNum){
+  var indexOfObjArray = scheduleList[p_objKind][p_objNum];
+  for(var t=0;t<objArray[indexOfObjArray].objPeriodArray.length;t++){
+    if(t%3 == 0&&objArray[indexOfObjArray].objPeriodArray[t] != 0){
+      for(var i=objArray[indexOfObjArray].objPeriodArray[t+1];i<=objArray[indexOfObjArray].objPeriodArray[t+2];i++){
+        scheduleNum[objArray[indexOfObjArray].objPeriodArray[t]-1][i-1][0] = p_objKind+1;
+        scheduleNum[objArray[indexOfObjArray].objPeriodArray[t]-1][i-1][1] = p_objNum;
+      }
+    }
+  }
+  for(var i=0;i<OBJDAY;i++){
+    for(var j=0;j<OBJPERIOD;j++){
+      beforeScheduleNum[p_objKind][i][j] = scheduleNum[i][j][0];
+    }
+  }
+}
+function makeScheduleInit(){
+  scheduleList = new Array();
+  for(var i=0;i<OBJCOUNT;i++){
+    scheduleList[i] = new Array();
+  }
+  scheduleNum = new Array();
+  for(var i=0;i<OBJDAY;i++){
+    scheduleNum[i] = new Array();
+    for(var j=0;j<OBJPERIOD;j++){
+      scheduleNum[i][j] = new Array();
+    }
+  }
+  beforeScheduleNum = new Array();
+  for(var i=0;i<OBJCOUNT;i++){
+    beforeScheduleNum[i] = new Array();
+    for(var j=0;j<OBJDAY;j++){
+      beforeScheduleNum[i][j] = new Array();
+    }
+  }
+  objArray = [];
+  scheduleDataString = "";
+  var tmpData = "";
+  $.post("./loadUserData.php", { 'ID':universityID  }, function (data) {
+      tmpData = data;
+        if(tmpData == ""){
+    alert("추가된 과목이 없습니다. 과목을 추가하세요.")
+    return;
+  }else{
+    loadObjects(tmpData);
+  }
+  objArray.splice(objArray.length-1,1);
+  for(var i=0;i<OBJCOUNT;i++){
+    if(scheduleList[i].length > 0){
+      scheduleList[i].splice(0,scheduleList[i].length);
+      scheduleList[i] = new Array();
+    }
+  }
+  for(var i=0;i<objArray.length;i++){
+    for(var j=0;j<OBJCOUNT;j++){
+      if(scheduleList[j].length == 0){
+        scheduleList[j][0] = i;
+        break;
+      }else if(objArray[scheduleList[j][0]].objNum == objArray[i].objNum){
+        scheduleList[j][scheduleList[j].length] = i;
+        break;
+      }
+    }
+  }
+  count = 1;
+  maxCount = 0;
+  for(var i=0;i<OBJCOUNT;i++){
+    if(scheduleList[i].length > 0){
+      maxCount++;
+    }else{
+      break;
+    }
+  }
+  if(maxCount <= 2){
+    alert("과목이 너무 적습니다. 더 많은 과목을 추가해주세요.")
+    return;
+  }
+  if(maxCount > OBJCOUNT){
+    alert("과목이 너무 많습니다. 과목을 삭제해주세요.")
+    return;
+  }
+  for(var i=0;i<scheduleList[0].length;i++){
+    if(maxCount == 0){
+      break;
+    }
+    for(var j=0;j<OBJDAY;j++){
+      for(var k=0;k<OBJPERIOD;k++){
+        scheduleNum[j][k][0] = 0;
+        scheduleNum[j][k][1] = 0;
+      }
+    }
+    insertSchedule(0,i);
+    forLoop(maxCount,1);
+  }
+  alert("이제 다 만들었습니다.");
+  var tmpData = localStorage.getItem("scheduleData");
+  if(tmpData != null){
+  loadSchedule(tmpData);
+}
+  drawSchedule(drawNum_showScheduleJs);
+  });
+}
+function goToPrev(){
+  if(drawNum_showScheduleJs > 0){
+    drawNum_showScheduleJs--;
+    drawSchedule(drawNum_showScheduleJs);
+  }else{
+    alert("이전 스케줄을 볼 수 없습니다.");
+  }
+}
+function goToNext(){
+  if(scheduleArray.length-2 > drawNum_showScheduleJs){
+    drawNum_showScheduleJs++;
+    drawSchedule(drawNum_showScheduleJs);
+  }else{
+    alert("다음 스케줄을 볼 수 없습니다.");
+  }
+}
+function drawSchedule(num){
+  var schedule_tbody = document.getElementById("my-tbody");
+  var scheduleTbodyLength = schedule_tbody.rows.length;
+  if(scheduleTbodyLength >= 1){
+    for(var i=0;i<scheduleTbodyLength;i++){
+      schedule_tbody.deleteRow(0);
+    }
+  }
+  for(var outerLoop = 1;outerLoop <= OBJPERIOD;outerLoop++){
+    var row = schedule_tbody.insertRow(schedule_tbody.rows.length);
+    var cell = new Array();
+    for(var i=0;i<OBJDAY+1;i++){
+      cell[i] = row.insertCell(i);
+    }
+    cell[0].innerHTML = outerLoop + "교시";
+    for(var i=1;i<=OBJDAY;i++){
+      for(var j=0;j<scheduleArray[num].length;j++){
+        for(var k=0;k<scheduleArray[num][j].objPeriodArray.length;k++){
+          if(k%3==0){
+            if(scheduleArray[num][j].objPeriodArray[k] == i&&outerLoop>=scheduleArray[num][j].objPeriodArray[k+1]&&outerLoop<=scheduleArray[num][j].objPeriodArray[k+2]){
+              cell[i].innerHTML = scheduleArray[num][j].objNum+"_"+scheduleArray[num][j].objClass+"-"+scheduleArray[num][j].objName+"-"+scheduleArray[num][j].objProf;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+function loadSchedule(p_content){
+  var pCount = 0;
+  var firstP = 0;
+  var indexOfScheduleArray = 0;
+  scheduleArray = new Array();
+  for(var i=0;i<p_content.length;i++){
+    if(p_content.charAt(i)=="@"){
+      objArray = new Array();
+      loadObjects(p_content.substr(firstP,i-firstP));
+      scheduleArray[indexOfScheduleArray] = new Array();
+      for(var j=0;j<objArray.length;j++){
+        scheduleArray[indexOfScheduleArray][j] = objArray[j];
+      }
+      firstP = i+1;
+      pCount = 0;
+      indexOfScheduleArray++;
+    }
+  }
+}
+  function back(){
+    post_to_url('./inha_main.html',{'universityID':universityID});
+  }
+</script>
+</head>
+<body onload="makeScheduleInit()">
+
+<div class="container">
+
+<header>
+   <h1>인하대학교 수강신청 도우미</h1>
+</header>
+  
+<nav>
+  <ul>
+  </ul>
+</nav>
+
+<article>
+  <input type="button" value="이전" onclick="goToPrev()">
+  <input type="button" value="다음" onclick="goToNext()">
+  <input type="button" value="돌아기기" onclick="back()">
+  <table id='table1' width='400' border="1" align="center">
+  <tr id='row1'>
+    <th align='center'>시간표</th>
+    <th align='center'>월</th>
+    <th align='center'>화</th>
+    <th align='center'>수</th>
+    <th align='center'>목</th>
+    <th align='center'>금</th>
+    <th align='center'>토</th>
+  </tr>
+  <tbody id="my-tbody"></tbody>
+  </table>
+</article>
+
+<footer>관리자 메일 주소:akak4456@naver.com</footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" /> 
+<style>
+div.container {
+  width: 100%;
+  border: 1px solid gray;
+}
+
+header, footer {
+    padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+nav {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+   
+nav ul a {
+    text-decoration: none;
+}
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=button] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=button]:hover {
+    background-color: #45a049;
+}
+</style>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="./sha512.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./posttourl.js"  type="text/javascript" charset="utf-8"></script>
+<script language="javascript" charset="utf-8">
+  var universityID = '<?php echo $_POST['universityID']; ?>';
+  function add(){
+    post_to_url('./inha_add.html',{'universityID':universityID});
+  }
+  function seedelete(){
+    post_to_url('./inha_seedelete.html',{'universityID':universityID});
+  }
+  function makeschedule(){
+    post_to_url('./inha_makeschedule.html',{'universityID':universityID});
+  }
+</script>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+   <h1>인하대학교 수강신청 도우미</h1>
+</header>
+  
+<nav>
+  <ul>
+  </ul>
+</nav>
+
+<article> 
+  <input type="button" value="과목추가" onclick="add()">
+  <input type="button" value="과목보기/제거" onclick="seedelete()">
+  <input type="button" value="스케줄만들기" onclick="makeschedule()">
+</article>
+
+<footer>관리자 메일 주소:akak4456@naver.com</footer>
+
+</div>
+
+</body>
+</html>

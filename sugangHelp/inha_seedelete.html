@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" /> 
+<style>
+div.container {
+  width: 100%;
+  border: 1px solid gray;
+}
+
+header, footer {
+    padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+nav {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+   
+nav ul a {
+    text-decoration: none;
+}
+
+article {
+    margin-left: 170px;
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
+}
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=button] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=button]:hover {
+    background-color: #45a049;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="./sha512.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./posttourl.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./loadData.js"  type="text/javascript" charset="utf-8"></script>
+<script src="./Object.js"  type="text/javascript" charset="utf-8"></script>
+<script language="javascript" charset="utf-8">
+  var universityID = '<?php echo $_POST['universityID']; ?>';
+  var str = "";
+  var objArray;
+  function back(){
+    post_to_url('./inha_main.html',{'universityID':universityID});
+  }
+  function init(){
+    var my_tbody = document.getElementById('my-tbody');
+    var len = my_tbody.rows.length;
+    for(var i=0;i<len;i++){
+      my_tbody.deleteRow( my_tbody.rows.length-1 );
+    }
+    str = "";
+    $.post("./loadUserData.php", {'ID':universityID }, function (data) {
+      objArray = new Array();
+      loadObjects(data);
+      objArray.splice(objArray.length-1,1);
+      for(var i=0;i<objArray.length;i++){
+        var row = my_tbody.insertRow( my_tbody.rows.length );
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        cell1.innerHTML = objArray[i].objNum+"-"+objArray[i].objClass;
+        cell2.innerHTML = objArray[i].objName;
+        cell3.innerHTML = objArray[i].objProf;
+        cell4.innerHTML = objArray[i].objMajor;
+        cell5.innerHTML = '<input type="button" value="제거" onclick="deleteFunction('+i+')">';
+      }
+    });
+  }
+  function deleteFunction(num1){
+    $.post("./deleteUserData.php", {'ID':universityID,'NUMBER':num1 }, function (data) {
+      alert("제거가 완료되었습니다.");
+      init();
+    });
+  }
+  function deleteAll(){
+    $.post("./deleteAllUserData.php", {'ID':universityID}, function (data) {
+      alert("제거가 완료되었습니다.");
+      init();
+    });
+  }
+</script>
+</head>
+<body onload="init()">
+
+<div class="container">
+
+<header>
+   <h1>인하대학교 수강신청 도우미</h1>
+</header>
+  
+<nav>
+  <ul>
+  </ul>
+</nav>
+
+<article>
+  <input type="button" value="과목모두삭제하기" onclick="deleteAll()">
+  <input type="button" value="돌아기기" onclick="back()">
+  <table id='table1' width='400' border="1" align="center">
+  <tr id='row1'>
+    <th align='center'>학수번호</th>
+    <th align='center'>과목명</th>
+    <th align='center'>교수명</th>
+    <th align='center'>학과</th>
+    <th align='center'>시간표</th>
+  </tr>
+  <tbody id="my-tbody"></tbody>
+  </table>
+</article>
+
+<footer>관리자 메일 주소:akak4456@naver.com</footer>
+
+</div>
+
+</body>
+</html>
