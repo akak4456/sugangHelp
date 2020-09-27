@@ -1,9 +1,5 @@
-# suganghelp
-## suganghelp
-### suganghelp
-#### suganghelp
-##### suganghelp
-```
-zhel
-```
-  
+# Description
+suganghelp는 인하대학교 수강 신청 도우미 프로그램으로 자신이 수강신청하기를 원하는 과목들이 있을 때 거기에서 가능한 조합들을 보여주는 웹사이트 입니다. 
+이 프로젝트는 1인이 1주일 미만의 시간을 들여서 만든 프로젝트입니다. 2017년 7월(대학 1학년)에 이 프로젝트를 진행하였습니다.
+akak4456.dothome.co.kr 에 서비스 되고 있습니다만, 현재는 정상동작하지 않습니다.
+
